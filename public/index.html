@@ -249,7 +249,7 @@
     
     try {
   
-      const apiUrl = `https://th-user-checker.vercel.app/}`;
+      const apiUrl = `https://th-user-checker.vercel.app/api/v1/check-username?username=${encodeURIComponent(username)}`;
       
       const response = await fetch(apiUrl);
       const data = await response.json();
