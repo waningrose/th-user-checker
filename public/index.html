@@ -248,37 +248,23 @@
     checkBtn.disabled = true;
     
     try {
+  const toyURL = `https://toyhou.se/${username}`;
   
-      const apiUrl = `https://th-user-checker.vercel.app/api/v1/check-username?username=${encodeURIComponent(username)}`;
-      
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      
-      checkBtn.disabled = false;
-      
-      if (data.available === true) {
-        resultDiv.className = 'result show available';
-        statusText.textContent = `@${username} is available!`;
-        statusDetail.textContent = 'this username isn\'t claimed yet';
-      } else if (data.available === false) {
-        resultDiv.className = 'result show taken';
-        statusText.textContent = `@${username} is taken`;
-        statusDetail.textContent = 'this username is in use on toyhou.se';
-      } else if (data.available === null) {
-        resultDiv.className = 'result show loading';
-        statusText.textContent = 'unsure about this one';
-        statusDetail.textContent = `couldn't determine status (code: ${data.status})`;
-      } else {
-        resultDiv.className = 'result show error';
-        statusText.textContent = 'error';
-        statusDetail.textContent = data.error || 'something went wrong';
-      }
-    } catch (error) {
-      checkBtn.disabled = false;
-      resultDiv.className = 'result show error';
-      statusText.textContent = 'error checking username';
-      statusDetail.textContent = error.message;
-    }
+  // use a cors proxy to bypass browser restrictions
+  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(toyURL)}`;
+  
+  const response = await fetch(proxyUrl);
+  const data = await response.json();
+  
+  // if we got a response, the user exists
+  if (data.contents && data.contents.length > 0) {
+    resultDiv.className = 'result show taken';
+    statusText.textContent = `@${username} is taken`;
+    statusDetail.textContent = 'this username is in use on toyhou.se';
+  } else {
+    resultDiv.className = 'result show available';
+    statusText.textContent = `@${username} is available!`;
+    statusDetail.textContent = 'this username isn\'t claimed yet';
   }
 </script>
 
