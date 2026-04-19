@@ -19,10 +19,14 @@
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      color: #1f2937;
     }
 
-    body.dark-mode {
-      background: #1a1a1a;
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1a1a1a;
+        color: #f3f4f6;
+      }
     }
 
     .container {
@@ -35,21 +39,18 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    body.dark-mode .container {
-      background: #2a2a2a;
-      border-color: #3a3a3a;
+    @media (prefers-color-scheme: dark) {
+      .container {
+        background: #2a2a2a;
+        border-color: #3a3a3a;
+      }
     }
 
     h1 {
       font-size: 22px;
       font-weight: 500;
-      color: #1f2937;
       margin-bottom: 1.5rem;
       line-height: 1.3;
-    }
-
-    body.dark-mode h1 {
-      color: #f3f4f6;
     }
 
     .input-group {
@@ -70,10 +71,12 @@
       transition: border-color 0.2s;
     }
 
-    body.dark-mode input {
-      background: #3a3a3a;
-      border-color: #4a4a4a;
-      color: #f3f4f6;
+    @media (prefers-color-scheme: dark) {
+      input {
+        background: #3a3a3a;
+        border-color: #4a4a4a;
+        color: #f3f4f6;
+      }
     }
 
     input:focus {
@@ -98,10 +101,12 @@
       transition: all 0.2s;
     }
 
-    body.dark-mode button {
-      background: #3a3a3a;
-      border-color: #4a4a4a;
-      color: #f3f4f6;
+    @media (prefers-color-scheme: dark) {
+      button {
+        background: #3a3a3a;
+        border-color: #4a4a4a;
+        color: #f3f4f6;
+      }
     }
 
     button:hover {
@@ -132,9 +137,11 @@
       border-color: rgba(34, 197, 94, 0.3);
     }
 
-    body.dark-mode .result.available {
-      background: rgba(34, 197, 94, 0.15);
-      color: #86efac;
+    @media (prefers-color-scheme: dark) {
+      .result.available {
+        background: rgba(34, 197, 94, 0.15);
+        color: #86efac;
+      }
     }
 
     .result.taken {
@@ -143,9 +150,11 @@
       border-color: rgba(239, 68, 68, 0.3);
     }
 
-    body.dark-mode .result.taken {
-      background: rgba(239, 68, 68, 0.15);
-      color: #fca5a5;
+    @media (prefers-color-scheme: dark) {
+      .result.taken {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+      }
     }
 
     .result.loading {
@@ -154,9 +163,11 @@
       border-color: rgba(59, 130, 246, 0.3);
     }
 
-    body.dark-mode .result.loading {
-      background: rgba(59, 130, 246, 0.15);
-      color: #93c5fd;
+    @media (prefers-color-scheme: dark) {
+      .result.loading {
+        background: rgba(59, 130, 246, 0.15);
+        color: #93c5fd;
+      }
     }
 
     .result.error {
@@ -165,9 +176,11 @@
       border-color: rgba(239, 68, 68, 0.3);
     }
 
-    body.dark-mode .result.error {
-      background: rgba(239, 68, 68, 0.15);
-      color: #fca5a5;
+    @media (prefers-color-scheme: dark) {
+      .result.error {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+      }
     }
 
     .status-text {
@@ -187,8 +200,10 @@
       line-height: 1.6;
     }
 
-    body.dark-mode .hint {
-      color: #9ca3af;
+    @media (prefers-color-scheme: dark) {
+      .hint {
+        color: #9ca3af;
+      }
     }
   </style>
 </head>
@@ -214,7 +229,7 @@
   </div>
   
   <div class="hint">
-    just type the username (letters, numbers, hyphens, and underscores only) and we'll see if it's taken on toyhou.se
+    just type the username and we'll see if it's taken on toyhou.se
   </div>
 </div>
 
@@ -224,11 +239,6 @@
   const resultDiv = document.getElementById('result');
   const statusText = document.getElementById('statusText');
   const statusDetail = document.getElementById('statusDetail');
-  
-  // detect dark mode
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.body.classList.add('dark-mode');
-  }
   
   input.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') checkUsername();
@@ -247,31 +257,35 @@
     statusDetail.textContent = '';
     checkBtn.disabled = true;
     
-    try {const toyURL = `https://toyhou.se/${username}`;
-
-// use a cors proxy to bypass browser restrictions
-const proxyUrl = `https://cors-anywhere.herokuapp.com/${toyURL}`;
-
-const response = await fetch(proxyUrl);
-const text = await response.text();
-
-checkBtn.disabled = false;
-
-// if we got the page content, the user exists
-if (response.ok && text.length > 100) {
-  resultDiv.className = 'result show taken';
-  statusText.textContent = `@${username} is taken`;
-  statusDetail.textContent = 'this username is in use on toyhou.se';
-} else if (response.status === 404) {
-  resultDiv.className = 'result show available';
-  statusText.textContent = `@${username} is available!`;
-  statusDetail.textContent = 'this username isn\'t claimed yet';
-} else {
-  resultDiv.className = 'result show error';
-  statusText.textContent = 'error checking username';
-  statusDetail.textContent = 'toyhou.se is not responding right now';
-}
-         </script>
+    try {
+      const toyURL = `https://toyhou.se/${username}`;
+      const proxyUrl = `https://cors-anywhere.herokuapp.com/${toyURL}`;
+      
+      const response = await fetch(proxyUrl);
+      
+      checkBtn.disabled = false;
+      
+      if (response.ok) {
+        resultDiv.className = 'result show taken';
+        statusText.textContent = `@${username} is taken`;
+        statusDetail.textContent = 'this username is in use on toyhou.se';
+      } else if (response.status === 404) {
+        resultDiv.className = 'result show available';
+        statusText.textContent = `@${username} is available!`;
+        statusDetail.textContent = 'this username isn\'t claimed yet';
+      } else {
+        resultDiv.className = 'result show error';
+        statusText.textContent = 'error checking';
+        statusDetail.textContent = 'something went wrong. try again?';
+      }
+    } catch (error) {
+      checkBtn.disabled = false;
+      resultDiv.className = 'result show error';
+      statusText.textContent = 'error checking username';
+      statusDetail.textContent = error.message;
+    }
+  }
+</script>
 
 </body>
 </html>
