@@ -247,26 +247,31 @@
     statusDetail.textContent = '';
     checkBtn.disabled = true;
     
-    try {
-  const toyURL = `https://toyhou.se/${username}`;
-  
-  // use a cors proxy to bypass browser restrictions
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(toyURL)}`;
-  
-  const response = await fetch(proxyUrl);
-  const data = await response.json();
-  
-  // if we got a response, the user exists
-  if (data.contents && data.contents.length > 0) {
-    resultDiv.className = 'result show taken';
-    statusText.textContent = `@${username} is taken`;
-    statusDetail.textContent = 'this username is in use on toyhou.se';
-  } else {
-    resultDiv.className = 'result show available';
-    statusText.textContent = `@${username} is available!`;
-    statusDetail.textContent = 'this username isn\'t claimed yet';
-  }
-</script>
+    try {const toyURL = `https://toyhou.se/${username}`;
+
+// use a cors proxy to bypass browser restrictions
+const proxyUrl = `https://cors-anywhere.herokuapp.com/${toyURL}`;
+
+const response = await fetch(proxyUrl);
+const text = await response.text();
+
+checkBtn.disabled = false;
+
+// if we got the page content, the user exists
+if (response.ok && text.length > 100) {
+  resultDiv.className = 'result show taken';
+  statusText.textContent = `@${username} is taken`;
+  statusDetail.textContent = 'this username is in use on toyhou.se';
+} else if (response.status === 404) {
+  resultDiv.className = 'result show available';
+  statusText.textContent = `@${username} is available!`;
+  statusDetail.textContent = 'this username isn\'t claimed yet';
+} else {
+  resultDiv.className = 'result show error';
+  statusText.textContent = 'error checking username';
+  statusDetail.textContent = 'toyhou.se is not responding right now';
+}
+         </script>
 
 </body>
 </html>
